@@ -94,7 +94,7 @@ function get-vmB([Parameter(Mandatory = $true)][string]$VM_NAME) {
     .SYNOPSIS
      better get-vm (single VM) 
      
-    .PARAMETER s
+    .PARAMETER VM_NAME
         vmname
      
     .EXAMPLE
@@ -167,7 +167,7 @@ function get-vmBds([Parameter(Mandatory = $true)][string]$DATASTORE_NAME) {
 
     .DESCRIPTION
      
-    .PARAMETER s
+    .PARAMETER DATASTORE_NAME
       datastore name
      
     .EXAMPLE
@@ -203,7 +203,7 @@ function get-vmBhot ([Parameter(Mandatory = $true)][string]$VM_NAME) {
     .DESCRIPTION
       Similar to get-vmB but checks for hotadd capabilities.
      
-    .PARAMETER s
+    .PARAMETER VM_NAME
        vmname
      
     .EXAMPLE
@@ -232,7 +232,7 @@ function get-vmBhost ([Parameter(Mandatory = $true)][string]$ESX_HOST) {
     .DESCRIPTION
       all VMs running on specific host.
      
-    .PARAMETER s
+    .PARAMETER ESX_HOST
       esx hostname
      
     .EXAMPLE
