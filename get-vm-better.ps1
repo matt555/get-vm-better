@@ -26,6 +26,9 @@
  - allow pipe into get-vmB
  - find faster methods for slower functions(get-vmbhost for example)
    get-view may be faster in some cases
+ - resolve depricated warnings
+   - @{n="vcenter";e={($_.Client.ServerUri.Split("@"))[1]}}
+        -instead use- $_.Uid.Split("/")[1].split("@")[1]
 
 #>
 
@@ -111,7 +114,8 @@ function get-vmB([Parameter(Mandatory = $true)][string]$VM_NAME) {
         @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
         @{n="cluster";e={$_.vmhost.parent.name}},`
         @{n="datastore";e={$ds_name.name}},`
-        @{n="vcenter";e={($_.Client.ServerUri.Split("@"))[1]}},`
+        #@{n="vcenter";e={($_.Client.ServerUri.Split("@"))[1]}},`
+        @{n="vcenter";e={($_.Uid.Split("/")[1].split("@")[1]).split(":")[0]}},`
         @{n="NetworkName";e={$NetworkName}},`
         @{n="GuestFullName";e={$_.ExtensionData.Config.GuestFullName}}
     }
@@ -125,7 +129,7 @@ function get-vmB([Parameter(Mandatory = $true)][string]$VM_NAME) {
             @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
             @{n="cluster";e={$_.vmhost.parent.name}},`
             @{n="datastore";e={$ds_name.name}},`
-            @{n="vcenter";e={($_.Client.ServerUri.Split("@"))[1]}},`
+            @{n="vcenter";e={($_.Uid.Split("/")[1].split("@")[1]).split(":")[0]}},`
             @{n="NetworkName";e={$NetworkName}},`
             @{n="GuestFullName";e={$_.ExtensionData.Config.GuestFullName}}
         }
@@ -154,7 +158,7 @@ function get-vmBall {
         @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
         @{n="cluster";e={$_.vmhost.parent.name}},`
         @{n="datastore";e={$_.ExtensionData.Config.DatastoreUrl.name}},`
-        @{n="vcenter";e={($_.Client.ServerUri.Split("@"))[1]}},`
+        @{n="vcenter";e={($_.Uid.Split("/")[1].split("@")[1]).split(":")[0]}},`
         @{n="GuestFullName";e={$_.ExtensionData.Config.GuestFullName}},`
         @{n="GuestFamily";e={$_.Guest.GuestFamily}}
 }
@@ -187,7 +191,7 @@ function get-vmBds([Parameter(Mandatory = $true)][string]$DATASTORE_NAME) {
     @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
     @{n="cluster";e={$_.vmhost.parent.name}},`
     @{n="datastore";e={$sd.Name}},`
-    @{n="vcenter";e={($_.Client.ServerUri.Split("@"))[1]}},`
+    @{n="vcenter";e={($_.Uid.Split("/")[1].split("@")[1]).split(":")[0]}},`
     @{n="datastore_ip";e={$sd.RemoteHost}},`
     @{n="datastore_path";e={$sd.RemotePath}},`
     @{n="GuestFullName";e={$_.ExtensionData.Config.GuestFullName}},`
@@ -217,7 +221,7 @@ function get-vmBhot ([Parameter(Mandatory = $true)][string]$VM_NAME) {
     @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
     @{n="cluster";e={$_.vmhost.parent.name}},`
     @{n="datastore";e={$sd.Name}},`
-    @{n="vcenter";e={($_.Client.ServerUri.Split("@"))[1]}},`
+    @{n="vcenter";e={($_.Uid.Split("/")[1].split("@")[1]).split(":")[0]}},`
     @{n="GuestFullName";e={$_.ExtensionData.Config.GuestFullName}},`
     @{n="CpuHotAddEnabled";e={$_.ExtensionData.config.CpuHotAddEnabled}},`
     @{n="MemoryHotAddEnabled";e={$_.ExtensionData.config.MemoryHotAddEnabled}}
@@ -249,7 +253,7 @@ function get-vmBhost ([Parameter(Mandatory = $true)][string]$ESX_HOST) {
         @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
         @{n="cluster";e={$_.vmhost.parent.name}},`
         @{n="datastore";e={$sd.name}},`
-        @{n="vcenter";e={($_.Client.ServerUri.Split("@"))[1]}},`
+        @{n="vcenter";e={($_.Uid.Split("/")[1].split("@")[1]).split(":")[0]}},`
         @{n="GuestFullName";e={$_.ExtensionData.Config.GuestFullName}}
     }
     else {
@@ -261,7 +265,7 @@ function get-vmBhost ([Parameter(Mandatory = $true)][string]$ESX_HOST) {
             @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
             @{n="cluster";e={$_.vmhost.parent.name}},`
             @{n="datastore";e={$sd.name}},`
-            @{n="vcenter";e={($_.Client.ServerUri.Split("@"))[1]}},`
+            @{n="vcenter";e={($_.Uid.Split("/")[1].split("@")[1]).split(":")[0]}},`
             @{n="GuestFullName";e={$_.ExtensionData.Config.GuestFullName}}
         }
         $out
@@ -289,7 +293,7 @@ function get-vmBresourceAll {
     @{n="UsedSpaceGB";e={"{0:N2}" -f $_.UsedSpaceGB}},`
     @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
     @{n="cluster";e={$_.vmhost.parent.name}},`
-    @{n="vcenter";e={($_.Client.ServerUri.Split("@"))[1]}},`
+    @{n="vcenter";e={($_.Uid.Split("/")[1].split("@")[1]).split(":")[0]}},`
     @{n="GuestFullName";e={$_.ExtensionData.Config.GuestFullName}},`
     @{n="CpuHotAddEnabled";e={$_.ExtensionData.config.CpuHotAddEnabled}},`
     @{n="MemoryHotAddEnabled";e={$_.ExtensionData.config.MemoryHotAddEnabled}},`

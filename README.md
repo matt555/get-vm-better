@@ -15,10 +15,15 @@
 
 ## NOTES
   Version:        1.0
+
   Author:         Matt S.
+
   Creation Date:  5/16/2017
+
   Website:        http://mjs.one
+
   Github:
+
   VMTools table:  https://packages.vmware.com/tools/versions
 
 ## TODO
