@@ -15,7 +15,7 @@
   2) Increase performance.
 
 .NOTES
-  Version:        1.0
+  Version:        1.1
   Author:         Matt S.
   Creation Date:  5/16/2017
   Website:        http://mjs.one
@@ -83,8 +83,8 @@ Function Connect-VMwareServer {
   }
 }
 
-$Server = Read-Host 'Specify the vCenter Server or ESXi Host to connect to (IP or FQDN)?'
-Connect-VMwareServer -VMServer $Server
+# $Server = Read-Host 'Specify the vCenter Server or ESXi Host to connect to (IP or FQDN)?'
+# Connect-VMwareServer -VMServer $Server
 
 
 ###############################################################################
@@ -107,9 +107,9 @@ function get-vmB([Parameter(Mandatory = $true)][string]$VM_NAME) {
     $VMNAME = get-vm $VM_NAME
 
     if ($VMNAME.count -eq 1) { # this is required because get-vm may return multiple VMs if connected to multiple vCenters.
-        $ds_name= $VMNAME | get-datastore | select name # lazy way of getting datastore. Should use $_.harddisks.
+        $ds_name= $VMNAME | get-datastore | Select-Object name # lazy way of getting datastore. Should use $_.harddisks.
         $NetworkName= ($VMNAME | Get-NetworkAdapter).NetworkName
-        $VMNAME | select Name, ip, hostname,version, ToolsStatus, ToolsVersion, ToolsVersionStatus, PowerState, BootTime, numcpu, MemoryMB, VMHost, Notes, Folder,`
+        $VMNAME | Select-Object Name, ip, hostname,version, ToolsStatus, ToolsVersion, ToolsVersionStatus, PowerState, BootTime, numcpu, MemoryMB, VMHost, Notes, Folder,`
         @{n="UsedSpaceGB";e={"{0:N2}" -f $_.UsedSpaceGB}},`
         @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
         @{n="cluster";e={$_.vmhost.parent.name}},`
@@ -122,9 +122,9 @@ function get-vmB([Parameter(Mandatory = $true)][string]$VM_NAME) {
     else {
         $out = @()
         foreach ($vm in $VMNAME){
-            $ds_name= $vm | get-datastore | select name
+            $ds_name= $vm | get-datastore | Select-Object name
             $NetworkName= ($VMNAME | Get-NetworkAdapter).NetworkName
-            $out += $vm| select Name, ip, hostname,version, ToolsStatus, ToolsVersion, ToolsVersionStatus, PowerState, BootTime, numcpu, MemoryMB, VMHost, Notes, Folder,`
+            $out += $vm| Select-Object Name, ip, hostname,version, ToolsStatus, ToolsVersion, ToolsVersionStatus, PowerState, BootTime, numcpu, MemoryMB, VMHost, Notes, Folder,`
             @{n="UsedSpaceGB";e={"{0:N2}" -f $_.UsedSpaceGB}},`
             @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
             @{n="cluster";e={$_.vmhost.parent.name}},`
@@ -153,7 +153,7 @@ function get-vmBall {
      $allvms = get-vmBall
      
     #>
-    get-vm | where {$_.powerstate -eq "poweredOn"} | select Name, ip, hostname, ToolsStatus, PowerState, BootTime, numcpu, MemoryMB, VMHost, Notes, Folder, `
+    get-vm | where {$_.powerstate -eq "poweredOn"} | Select-Object Name, ip, hostname, ToolsStatus, PowerState, BootTime, numcpu, MemoryMB, VMHost, Notes, Folder, `
         @{n="UsedSpaceGB";e={"{0:N2}" -f $_.UsedSpaceGB}},`
         @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
         @{n="cluster";e={$_.vmhost.parent.name}},`
@@ -186,7 +186,7 @@ function get-vmBds([Parameter(Mandatory = $true)][string]$DATASTORE_NAME) {
 
     $sd= Get-Datastore -Name $DATASTORE_NAME
     $s = $sd | get-vm
-    $s | select Name, ip, hostname, ToolsStatus, PowerState, BootTime, numcpu, MemoryMB, VMHost, `
+    $s | Select-Object Name, ip, hostname, ToolsStatus, PowerState, BootTime, numcpu, MemoryMB, VMHost, `
     @{n="UsedSpaceGB";e={"{0:N2}" -f $_.UsedSpaceGB}},`
     @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
     @{n="cluster";e={$_.vmhost.parent.name}},`
@@ -216,7 +216,7 @@ function get-vmBhot ([Parameter(Mandatory = $true)][string]$VM_NAME) {
     #>
     $s = get-vm $VM_NAME
     $sd= $s | get-datastore
-    $s | select Name, ip, hostname, ToolsStatus, version, PowerState, BootTime, numcpu, MemoryMB, VMHost, Notes, Folder,`
+    $s | Select-Object Name, ip, hostname, ToolsStatus, version, PowerState, BootTime, numcpu, MemoryMB, VMHost, Notes, Folder,`
     @{n="UsedSpaceGB";e={"{0:N2}" -f $_.UsedSpaceGB}},`
     @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
     @{n="cluster";e={$_.vmhost.parent.name}},`
@@ -247,8 +247,8 @@ function get-vmBhost ([Parameter(Mandatory = $true)][string]$ESX_HOST) {
     # ^^^ thought this would be faster but apparently not.
     $s = Get-VMHost $ESX_HOST | get-vm
     if ($s.count -eq 1) {
-        $sd= $s | get-datastore | select name
-        $s | select Name, ip, hostname,version, ToolsStatus, ToolsVersion, ToolsVersionStatus, PowerState, BootTime, numcpu, MemoryMB, VMHost, Notes, Folder,`
+        $sd= $s | get-datastore | Select-Object name
+        $s | Select-Object Name, ip, hostname,version, ToolsStatus, ToolsVersion, ToolsVersionStatus, PowerState, BootTime, numcpu, MemoryMB, VMHost, Notes, Folder,`
         @{n="UsedSpaceGB";e={"{0:N2}" -f $_.UsedSpaceGB}},`
         @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
         @{n="cluster";e={$_.vmhost.parent.name}},`
@@ -259,8 +259,8 @@ function get-vmBhost ([Parameter(Mandatory = $true)][string]$ESX_HOST) {
     else {
         $out = @()
         foreach ($vm in $s){
-            $sd= $vm | get-datastore | select name
-            $out += $vm| select Name, ip, hostname,version, ToolsStatus, ToolsVersion, ToolsVersionStatus, PowerState, BootTime, numcpu, MemoryMB, VMHost, Notes, Folder,`
+            $sd= $vm | get-datastore | Select-Object name
+            $out += $vm| Select-Object Name, ip, hostname,version, ToolsStatus, ToolsVersion, ToolsVersionStatus, PowerState, BootTime, numcpu, MemoryMB, VMHost, Notes, Folder,`
             @{n="UsedSpaceGB";e={"{0:N2}" -f $_.UsedSpaceGB}},`
             @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
             @{n="cluster";e={$_.vmhost.parent.name}},`
@@ -289,7 +289,7 @@ function get-vmBresourceAll {
      $vmall = get-vmBresourceAll
      
     #>
-    get-vm | where {$_.powerstate -eq "poweredOn"} | select Name, ip, hostname, ToolsStatus, version, PowerState, BootTime, numcpu, MemoryMB, VMHost, Notes, Folder,`
+    get-vm | Where-Object {$_.powerstate -eq "poweredOn"} | Select-Object Name, ip, hostname, ToolsStatus, version, PowerState, BootTime, numcpu, MemoryMB, VMHost, Notes, Folder,`
     @{n="UsedSpaceGB";e={"{0:N2}" -f $_.UsedSpaceGB}},`
     @{n="ProvisionedSpaceGB";e={"{0:N2}" -f $_.ProvisionedSpaceGB}},`
     @{n="cluster";e={$_.vmhost.parent.name}},`
